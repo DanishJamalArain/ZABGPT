@@ -1,0 +1,201 @@
+/* ===== Base Layout ===== */
+html, body {
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(to right, #dfe9f3, #ffffff);
+}
+
+.custom-nav {
+    background: #2c3e50;
+    padding: 1rem 2rem;
+}
+
+.custom-nav .navbar-brand {
+    font-family: 'Merriweather', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f1f1f1 !important;
+    letter-spacing: 1px;
+}
+
+.main-container {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.chat-card {
+    border-radius: 15px;
+    background: #fdfdfd;
+    overflow: hidden;
+}
+
+/* ===== Header ===== */
+.msg_head {
+    background: #34495e;
+    color: #ecf0f1;
+    border-bottom: 2px solid #2c3e50;
+    padding: 1rem;
+}
+
+.user_info h5 {
+    font-weight: 600;
+    color: #ecf0f1;
+}
+
+.user_info p {
+    margin: 0;
+    color: #bdc3c7;
+    font-size: 0.9rem;
+}
+
+.theme-toggle {
+    color: #ecf0f1;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.theme-toggle:hover {
+    transform: rotate(20deg);
+}
+
+/* ===== Chat Body ===== */
+.msg_card_body {
+    overflow-y: auto;
+    padding: 20px;
+    background: #f7f9fa;
+    height: 500px;
+    scroll-behavior: smooth;
+}
+
+.msg_card_body::-webkit-scrollbar {
+    width: 8px;
+}
+.msg_card_body::-webkit-scrollbar-thumb {
+    background-color: #95a5a6;
+    border-radius: 10px;
+}
+
+/* ===== Messages ===== */
+.msg_cotainer_send {
+    background: #2980b9;
+    color: white;
+    border-radius: 20px 20px 0 20px;
+    padding: 12px 16px;
+    max-width: 75%;
+    animation: fadeInUp 0.4s ease-in;
+}
+
+.msg_cotainer {
+    background: #ecf0f1;
+    border-radius: 20px 20px 20px 0;
+    padding: 12px 16px;
+    max-width: 75%;
+    animation: fadeInUp 0.4s ease-in;
+    color: #2c3e50;
+}
+
+.msg_time_send, .msg_time {
+    display: block;
+    font-size: 0.75rem;
+    color: #95a5a6;
+    margin-top: 5px;
+}
+
+.d-flex.justify-content-end.mb-4 .msg_cotainer_send {
+    margin-left: auto;
+}
+.d-flex.justify-content-start.mb-4 .msg_cotainer {
+    margin-right: auto;
+}
+
+.img_cont_msg {
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+}
+
+.user_img_msg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #2980b9;
+}
+
+/* ===== Footer ===== */
+.card-footer {
+    background: #ecf0f1;
+    border-top: 1px solid #dcdde1;
+}
+
+.type_msg {
+    border: none;
+    border-radius: 30px 0 0 30px;
+    background: #fff;
+    box-shadow: inset 0 0 3px #dcdde1;
+}
+
+.type_msg:focus {
+    outline: none;
+    box-shadow: 0 0 5px #3498db;
+}
+
+.send_btn {
+    border-radius: 0 30px 30px 0;
+    background: #2980b9;
+    color: white;
+    transition: background 0.3s ease;
+}
+.send_btn:hover {
+    background: #3498db;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Dark Mode ===== */
+body.dark {
+    background: #1e272e;
+}
+
+body.dark .chat-card {
+    background: #2f3640;
+}
+
+body.dark .msg_card_body {
+    background: #353b48;
+}
+
+body.dark .msg_cotainer {
+    background: #576574;
+    color: #f5f6fa;
+}
+
+body.dark .msg_cotainer_send {
+    background: #0abde3;
+}
+
+body.dark .type_msg {
+    background: #2f3640;
+    color: #f5f6fa;
+}
+
+body.dark .send_btn {
+    background: #0abde3;
+}
+
+body.dark .msg_head {
+    background: #2c2c54;
+}
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+    .msg_card_body {
+        height: 400px;
+    }
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}

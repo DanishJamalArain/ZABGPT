@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZabGpt - SZABIST Meeting Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10a37f;
+            --primary-dark: #0d8668;
+            --text-primary: #0d0d0d;
+            --text-secondary: #565869;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f8;
+            --border: #d1d5db;
+            --message-bot: #ffffff;
+            --message-user: #10a37f;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            background: var(--bg-primary);
+        }
+
+        /* HEADER - ChatGPT Style */
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .logo-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .header-info h1 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .header-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 2px 0 0 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-header {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-header:hover {
+            background: var(--bg-secondary);
+            border-color: var(--text-secondary);
+        }
+
+        /* MESSAGES - ChatGPT Style */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--bg-primary);
+        }
+
+        .welcome {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .welcome h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .message-group {
+            display: flex;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+            margin-bottom: 8px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-group.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .message-content {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .message-group.user .message-content {
+            max-width: 70%;
+            align-items: flex-end;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 8px;
+            line-height: 1.5;
+            font-size: 14px;
+            word-wrap: break-word;
+            box-shadow: none;
+            border: none;
+        }
+
+        .message-bubble.bot {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .message-bubble.user {
+            background: var(--message-user);
+            color: white;
+            border-radius: 14px;
+        }
+
+        /* HTML FORMATTING - ChatGPT Style */
+        .message-bubble h1,
+        .message-bubble h2,
+        .message-bubble h3 {
+            margin: 16px 0 8px 0;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1em;
+        }
+
+        .message-bubble h1 {
+            font-size: 1.3em;
+            margin: 20px 0 12px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .message-bubble h2 {
+            font-size: 1.2em;
+            margin: 16px 0 8px 0;
+        }
+
+        .message-bubble h3 {
+            font-size: 1.05em;
+        }
+
+
+
+        .message-bubble strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message-bubble em {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .message-bubble hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 12px 0;
+        }
+
+        .message-bubble ol,
+        .message-bubble ul {
+            margin: 12px 0 12px 24px;
+            padding: 0;
+        }
+
+        .message-bubble li {
+            margin: 6px 0;
+            line-height: 1.6;
+        }
+
+        .message-bubble ol li {
+            list-style-type: decimal;
+        }
+
+        .message-bubble ul li {
+            list-style-type: disc;
+        }
+
+        .message-bubble a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .message-bubble a:hover {
+            text-decoration: underline;
+        }
+
+        .message-bubble code {
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .message-bubble pre {
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .message-bubble pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.6;
+            padding: 0 12px;
+        }
+
+        /* TYPING */
+        .typing-bubble {
+            display: inline-flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        /* INPUT */
+        .input-section {
+            padding: 16px 20px;
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .input-form {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .input-field {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 10px 16px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn-send {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .btn-send:hover:not(:disabled) {
+            background: var(--bg-secondary);
+            transform: scale(1.05);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* SCROLLBAR */
+        .messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .messages::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .message-content {
+                max-width: 90%;
+            }
+
+            .message-group.user .message-content {
+                max-width: 90%;
+            }
+
+            .header-info p {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-container">
+                    <img id="logo" src="/static/szabist_logo.jpg" alt="SZABIST" onerror="showLogoFallback()" style="display:block;">
+                    <div class="logo-text" id="logoFallback" style="display:none;">Z</div>
+                </div>
+                <div class="header-info">
+                    <h1>ZabGpt</h1>
+                    <p>SZABIST Meeting Assistant</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-header" onclick="clearChat()" title="Clear chat">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Clear</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="messages" id="messagesBox">
+            <div class="welcome">
+                <h2>👋 Welcome to ZabGpt</h2>
+                <p>Ask me anything about SZABIST Academic Council, BASR, or DC meetings</p>
+            </div>
+        </div>
+
+        <!-- INPUT -->
+        <div class="input-section">
+            <form class="input-form" id="chatForm" onsubmit="sendMessage(event)">
+                <input 
+                    type="text" 
+                    class="input-field" 
+                    id="messageInput" 
+                    placeholder="Message ZabGpt..."
+                    autocomplete="off"
+                    required
+                >
+                <button type="submit" class="btn-send" id="sendBtn" title="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let SESSION_ID = null;
+        const messagesBox = document.getElementById('messagesBox');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatForm = document.getElementById('chatForm');
+
+        function showLogoFallback() {
+            document.getElementById('logo').style.display = 'none';
+            document.getElementById('logoFallback').style.display = 'flex';
+        }
+
+        async function initSession() {
+            try {
+                const response = await fetch('/new-session', { method: 'POST' });
+                const data = await response.json();
+                SESSION_ID = data.session_id;
+            } catch (error) {
+                SESSION_ID = 'session-' + Date.now();
+            }
+        }
+
+        function getTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                messagesBox.scrollTop = messagesBox.scrollHeight;
+            }, 0);
+        }
+
+        function addUserMessage(text) {
+            // Clear welcome message on first message
+            const welcome = messagesBox.querySelector('.welcome');
+            if (welcome) welcome.remove();
+
+            const group = document.createElement('div');
+            group.className = 'message-group user';
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble user';
+            bubble.textContent = text;
+
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = getTime();
+
+            content.appendChild(bubble);
+            content.appendChild(time);
+            group.appendChild(content);
+            messagesBox.appendChild(group);
+            scrollToBottom();
+        }
+
+        function createBotMessageBubble() {
+            const group = document.createElement('div');
+            group.className = 'message-group bot';
+            group.id = 'streamingGroup';
+
+            const avatar = document.createElement('img');
+            avatar.className = 'message-avatar';
+            avatar.src = '/static/szabist pic.png';
+            avatar.alt = 'ZabGpt';
+            avatar.style.objectFit = 'cover';
+            avatar.style.borderRadius = '8px';
+
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble bot';
+            bubble.id = 'streamingBubble';
+            bubble.innerHTML = '';
+
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = getTime();
+
+            content.appendChild(bubble);
+            content.appendChild(time);
+            group.appendChild(avatar);
+            group.appendChild(content);
+            messagesBox.appendChild(group);
+            scrollToBottom();
+
+            return bubble;
+        }
+
+        function showTyping() {
+            const group = document.createElement('div');
+            group.className = 'message-group bot';
+            group.id = 'typingGroup';
+
+            const avatar = document.createElement('img');
+            avatar.className = 'message-avatar';
+            avatar.src = '/static/szabist pic.png';
+            avatar.alt = 'ZabGpt';
+            avatar.style.objectFit = 'cover';
+            avatar.style.borderRadius = '8px';
+
+
+            const typing = document.createElement('div');
+            typing.className = 'typing-bubble';
+            typing.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+
+            group.appendChild(avatar);
+            group.appendChild(typing);
+            messagesBox.appendChild(group);
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            const typingGroup = document.getElementById('typingGroup');
+            if (typingGroup) typingGroup.remove();
+        }
+
+        async function sendMessage(event) {
+            event.preventDefault();
+            const text = messageInput.value.trim();
+            if (!text || !SESSION_ID) return;
+
+            addUserMessage(text);
+            messageInput.value = '';
+            sendBtn.disabled = true;
+            showTyping();
+
+            try {
+                const response = await fetch('/get-stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `msg=${encodeURIComponent(text)}&session_id=${SESSION_ID}`
+                });
+
+                hideTyping();
+                const streamingBubble = createBotMessageBubble();
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const json = JSON.parse(line.substring(6));
+
+                                if (json.type === 'chunk') {
+                                    streamingBubble.innerHTML += json.content;
+                                    scrollToBottom();
+                                } else if (json.type === 'complete') {
+                                    streamingBubble.innerHTML = json.answer;
+                                    scrollToBottom();
+                                }
+                            } catch (e) {
+                                console.error('Parse error:', e);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                hideTyping();
+                const streamingBubble = createBotMessageBubble();
+                streamingBubble.innerHTML = '<strong style="color: #ef4444;">❌ Error:</strong> Failed to connect to server.';
+            } finally {
+                sendBtn.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        async function clearChat() {
+            if (!confirm('Clear all messages?')) return;
+
+            try {
+                await fetch('/clear-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `session_id=${SESSION_ID}`
+                });
+
+                messagesBox.innerHTML = `
+                    <div class="welcome">
+                        <h2>👋 Welcome to ZabGpt</h2>
+                        <p>Ask me anything about SZABIST Academic Council, BASR, or DC meetings</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSession();
+            messageInput.focus();
+        });
+
+        chatForm.addEventListener('submit', sendMessage);
+    </script>
+</body>
+</html>
