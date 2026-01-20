@@ -66,10 +66,6 @@ orjson==3.10.12
 packaging==24.2
 parso==0.8.4
 pillow==11.0.0
-pinecone
-pinecone-client
-pinecone-plugin-inference
-pinecone-plugin-interface==0.0.7  
 platformdirs==4.3.6
 prompt_toolkit==3.0.48
 propcache==0.2.1
